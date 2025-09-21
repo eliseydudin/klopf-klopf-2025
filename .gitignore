@@ -1,0 +1,7 @@
+# os filed
+.DS_Store
+# python
+.venv/
+__pycache__/
+# frontend
+node_modules/
