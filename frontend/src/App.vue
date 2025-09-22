@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MetroMap from './components/metro_map/MetroMap.vue';
 </script>
 
 <template>
@@ -15,7 +16,8 @@
     <h1 class="title">Система мониторинга и выявления инцидентов на эскалаторах Московского
       Метрополитена</h1>
   </div>
-  <img class="card" src="../public/map.svg" alt="карта метро">
+
+  <MetroMap></MetroMap>
 </template>
 
 <style scoped>
@@ -23,21 +25,25 @@
   font-size: 20px;
   margin-top: 20px;
 }
+
 .icon_container {
   display: flex;
   font-size: 12px;
   color: #c83533;
   font-weight: bold;
 }
+
 .icon_metro {
   width: 40px;
 }
-.icon_metro_text{
+
+.icon_metro_text {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.card{
+
+.card {
   width: 1000px;
 }
 </style>
@@ -46,10 +52,10 @@
 * {
   font-family: "Mulish", serif;
 }
+
 .container {
   width: 1200px;
   margin: 0 auto;
   padding: 40px 10px;
 }
 </style>
-
