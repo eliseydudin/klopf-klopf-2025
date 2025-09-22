@@ -1,5 +1,6 @@
 import psycopg2
 from loguru import logger
+from config import BRANCHES
 
 
 class Database:
@@ -82,7 +83,7 @@ class ProjectDB:
         else:
             return res[0][0]
 
-    def get_event(self, id: int) -> dict | None:
+    def get_event_by_id(self, id: int) -> dict | None:
         """Получение инцидента в формате словаря"""
         result = self.db.execute_raw("SELECT * FROM events WHERE id = (%s)", (id,))
 
@@ -101,3 +102,41 @@ class ProjectDB:
     def updade_event(self, id: int, data: dict) -> int:
         """Обновление инцидента по id"""
         return self.db.update("events", data, id)
+
+    def get_events_by(
+        self, parameter: str, param_value: str, sort_by: str = "timestamp"
+    ) -> list[dict] | None:
+        result = self.db.execute_raw(
+            "SELECT * FROM events WHERE (%s) = (%s)",
+            (
+                parameter,
+                param_value,
+            ),
+        )
+
+        if result is None:
+            return None
+        else:
+            events_list = []
+            for item in result:
+                events_list.append(
+                    {
+                        "id": id,
+                        "timestamp": item[0],
+                        "station": item[1],
+                        "type": item[2],
+                    }
+                )
+            sorted_list = sorted(events_list, key=lambda x: x[sort_by])
+            return sorted_list
+
+    def get_branch_by_station(self, station: str) -> str:
+        lines = []
+
+        for line, stations in BRANCHES.items():
+            if station in stations:
+                lines.append(line)
+            return lines
+
+    def get_stations_by_branch(self, branch: str) -> list[str]:
+        return BRANCHES[branch]
