@@ -1,11 +1,55 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div class="container">
+    <header>
+      <div class="icon_container">
+        <img class="icon_metro" src="/img_metro.png" alt="Иконка метро">
+        <div class="icon_metro_text">
+          <p>Московский</p>
+          <p>метрополитен</p>
+        </div>
+      </div>
+    </header>
+    <h1 class="title">Система мониторинга и выявления инцидентов на эскалаторах Московского
+      Метрополитена</h1>
+  </div>
+  <img class="card" src="../public/map.svg" alt="карта метро">
 </template>
 
-<style scoped></style>
+<style scoped>
+.title {
+  font-size: 20px;
+  margin-top: 20px;
+}
+.icon_container {
+  display: flex;
+  font-size: 12px;
+  color: #c83533;
+  font-weight: bold;
+}
+.icon_metro {
+  width: 40px;
+}
+.icon_metro_text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.card{
+  width: 1000px;
+}
+</style>
+
+<style>
+* {
+  font-family: "Mulish", serif;
+}
+.container {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 40px 10px;
+}
+</style>
+
