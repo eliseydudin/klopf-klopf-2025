@@ -1,4 +1,4 @@
-from backend.database import Database
+from backend.database import ProjectDB
 from backend.config import Config
 from loguru import logger
 from backend.app import router
@@ -8,9 +8,8 @@ import uvicorn
 
 def main() -> None:
     try:
-        backend-web
         config = Config()
-        database = Database(
+        database = ProjectDB(
             config.HOST,
             config.USER,
             config.PASSWORD,
@@ -22,6 +21,7 @@ def main() -> None:
         api.state.db = database
         api.include_router(router)
         uvicorn.run(api)
+
     except Exception as err:
         logger.error(f"{err}")
     finally:
