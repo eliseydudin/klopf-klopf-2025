@@ -23,6 +23,6 @@ def main() -> None:
         uvicorn.run(api)
 
     except Exception as err:
-        logger.error(f"{err}")
+        logger.error(f"{type(err).__module__ + "." + type(err).__name__}: {err}")
     finally:
         logger.info("exiting...")

@@ -57,9 +57,12 @@ class Database:
             return cursor.rowcount
 
     def execute_raw(self, sql: str, params: tuple = ()):
-        with self.cursor() as cursor:
-            cursor.execute(sql, params)
-            return cursor.fetchall()
+        try:
+            with self.cursor() as cursor:
+                cursor.execute(sql, params)
+                return cursor.fetchall()
+        except psycopg2.ProgrammingError:
+            return None
 
 
 class ProjectDB:
@@ -74,7 +77,7 @@ class ProjectDB:
     def table_setup(self):
         """Создание таблицы для хранения инцидентов"""
         self.db.execute_raw(
-            sql="CREATE TABLE IF NOT EXIST events (id PRIMARY KEY, timestamp TIME, station VARCHAR NOT NULL, type TINYINT NOT NULL)"
+            sql="CREATE TABLE IF NOT EXISTS events (id bigint PRIMARY KEY, timestamp TIME, station VARCHAR NOT NULL, type int NOT NULL)"
         )
 
     def add_event(self, station: str, type: int = 0) -> None | int:
@@ -86,9 +89,15 @@ class ProjectDB:
             "events", {"timestamp": "LOCALTIME", "station": station, "type": type}
         )
 
-    def get_event(self, id: int) -> dict:
+    def get_event(self, id: int) -> dict | None:
         """Получение инцидента в формате словаря"""
-        result = self.db.execute_raw("SELECT * FROM events WHERE id = (%s)", (id,))[0]
+        result = self.db.execute_raw("SELECT * FROM events WHERE id = (%s)", (id,))
+
+        if result is None:
+            return None
+        else:
+            result = result[0]
+
         return {
             "id": id,
             "timestamp": result[0],
