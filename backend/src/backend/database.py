@@ -1,4 +1,5 @@
 import psycopg2
+from loguru import logger
 
 
 class Database:
@@ -29,23 +30,6 @@ class Database:
     def rollback(self):
         self.conn.rollback()
 
-    def insert(self, table: str, data: dict) -> None | int:
-        with self.cursor() as cursor:
-            columns = ", ".join(data.keys())
-            placeholders = ", ".join([f"%({k})s" for k in data.keys()])
-
-            cursor.execute(
-                "INSERT INTO %s (%s) VALUES (%s) RETURNING id",
-                (table, columns, placeholders),
-            )
-            self.commit()
-
-            result = cursor.fetchone()
-            if result is None:
-                return None
-            else:
-                return result[0]
-
     def update(self, table: str, data: dict, id_value: int) -> int:
         with self.cursor() as cursor:
             set_clause = ", ".join([f"`{k}` = %s" for k in data.keys()])
@@ -61,7 +45,8 @@ class Database:
             with self.cursor() as cursor:
                 cursor.execute(sql, params)
                 return cursor.fetchall()
-        except psycopg2.ProgrammingError:
+        except psycopg2.ProgrammingError as err:
+            logger.error(f"a psql error occurred: {err}")
             return None
 
 
@@ -77,7 +62,7 @@ class ProjectDB:
     def table_setup(self):
         """Создание таблицы для хранения инцидентов"""
         self.db.execute_raw(
-            sql="CREATE TABLE IF NOT EXISTS events (id bigint PRIMARY KEY, timestamp TIME, station VARCHAR NOT NULL, type int NOT NULL)"
+            sql="CREATE TABLE IF NOT EXISTS events (id bigint GENERATED ALWAYS AS IDENTITY, timestamp TIME, station VARCHAR NOT NULL, type int NOT NULL)"
         )
 
     def add_event(self, station: str, type: int = 0) -> None | int:
@@ -85,9 +70,17 @@ class ProjectDB:
         param: station название станции
         param: type тип инцидента, по умолчанию 0"""
 
-        return self.db.insert(
-            "events", {"timestamp": "LOCALTIME", "station": station, "type": type}
+        #    "events", {"timestamp": "LOCALTIME", "station": station, "type": type}
+        res = self.db.execute_raw(
+            "INSERT INTO events (timestamp, station, type) VALUES(LOCALTIME(6), %s, %s) RETURNING id",
+            (station, type),
         )
+        self.db.commit()
+
+        if res is None:
+            return None
+        else:
+            return res[0][0]
 
     def get_event(self, id: int) -> dict | None:
         """Получение инцидента в формате словаря"""

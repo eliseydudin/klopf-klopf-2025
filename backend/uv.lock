@@ -31,6 +31,7 @@ dependencies = [
     { name = "fastapi" },
     { name = "loguru" },
     { name = "psycopg2" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "uvicorn" },
 ]
@@ -40,6 +41,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.117.1" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "psycopg2", specifier = ">=2.9.10" },
+    { name = "pydantic", specifier = ">=2.11.9" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "uvicorn", specifier = ">=0.36.0" },
 ]
