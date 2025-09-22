@@ -148,7 +148,7 @@ export default class App {
 
   public destroy = () => (this.container.innerHTML = '')
 
-  public use = (fn: () => void) => {
+  public use = (fn: (object, next: () => void) => void) => {
     if (typeof fn === 'function') {
       this.options.middleware = fn
     }

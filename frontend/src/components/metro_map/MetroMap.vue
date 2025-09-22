@@ -12,12 +12,14 @@ onMounted(() => {
   }
 
   app = new App(elem.value);
-  console.log("мапа инициализирована йипи")
+  app.use((station, next)=> {
+    console.log(station);
+    next();
+  })
 })
 
 onUnmounted(() => {
   if (app === null) {
-    console.log("мапы нет пошёл нахуй")
     return;
   }
 
@@ -27,7 +29,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="current"></div>
+  <div class="map" ref="current"></div>
 </template>
 
 <style lang="css">
@@ -72,5 +74,12 @@ onUnmounted(() => {
 
 .moscow_metro_map__check.selected {
   opacity: 1;
+}
+.map{
+  width: 1000px;
+  height: 1000px;
+  margin: 0 auto;
+  border: black solid 1px;
+  border-radius: 15px;
 }
 </style>
