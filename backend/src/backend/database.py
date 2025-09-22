@@ -1,5 +1,6 @@
 import psycopg2
 from loguru import logger
+from config import BRANCHES
 
 
 class Database:
@@ -128,3 +129,14 @@ class ProjectDB:
                 )
             sorted_list = sorted(events_list, key=lambda x: x[sort_by])
             return sorted_list
+
+    def get_branch_by_station(self, station: str) -> str:
+        lines = []
+
+        for line, stations in BRANCHES.items():
+            if station in stations:
+                lines.append(line)
+            return lines
+
+    def get_stations_by_branch(self, branch: str) -> list[str]:
+        return BRANCHES[branch]
