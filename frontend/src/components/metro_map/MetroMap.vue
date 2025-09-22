@@ -82,4 +82,5 @@ onUnmounted(() => {
   border: black solid 1px;
   border-radius: 15px;
 }
+
 </style>

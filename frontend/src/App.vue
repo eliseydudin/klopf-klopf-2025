@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MetroMap from './components/metro_map/MetroMap.vue';
+import PopUp from "@/components/PopUp.vue";
 </script>
 
 <template>
@@ -15,6 +16,7 @@ import MetroMap from './components/metro_map/MetroMap.vue';
     </header>
     <h1 class="title">Система мониторинга и выявления инцидентов на эскалаторах Московского
       Метрополитена</h1>
+    <PopUp></PopUp>
   </div>
 
   <MetroMap></MetroMap>
