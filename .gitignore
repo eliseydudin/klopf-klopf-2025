@@ -5,3 +5,5 @@
 __pycache__/
 # frontend
 node_modules/
+# dev
+.env
