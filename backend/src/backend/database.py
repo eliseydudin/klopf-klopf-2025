@@ -1,94 +1,67 @@
 import psycopg2
-from .config import host, user, password, db_name
 
 
-def check():
-    try:
-        connection = psycopg2.connect(
+class Database:
+    """Класс датабазы проекта"""
+
+    def __init__(
+        self, host: str, user: str, password: str, database: str, port: int = 5432
+    ):
+        self.conn = psycopg2.connect(
             host=host,
             user=user,
             password=password,
-            database=db_name,
+            database=database,
+            port=port,
             options="-c client_encoding=UTF8",
         )
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT version()")
-            print(cursor.fetchone())
 
-    except Exception as ex:
-        print(f"[INFO] Error while working with PostgreSQL: {ex}")
-    finally:
-        pass
+    def cursor(self):
+        return self.conn.cursor()
 
-class DataBase:
-    """Класс датабазы проекта"""
-    def __init__(self, host:str, user:str, password:str, database:str, port:int = 5432):
-        self.connection_params = {
-            'host': host,
-            'database': database,
-            'user': user,
-            'password': password,
-            'port': port,
-            'options': "-c client_encoding=UTF8"
-        }
-        
-        self.conn = None
-        self.cursor = None
-
-    def connect(self):
-        """Соединение с базой данных"""
-        try:
-            self.conn = psycopg2.connect(**self.connection_params)
-            self.cursor = self.conn.cursor()
-        except Exception as e:
-            print(f"[ERROR] DataBase connection error: {e}")
-    
     def close(self):
         """Закрытие соединения с базой данных"""
-        if self.cursor:
-            self.cursor.close()
-        if self.conn:
-            self.conn.close()
-
-    def execute(self, query:str, params:dict, commit:bool = False):
-        try:
-            self.cursor.execute(query, params)
-
-            if query.strip().upper().startswith("SELECT"):
-                return self.cursor.fatchall()
-            if commit:
-                self.conn.commit()
-        except Exception as e:
-            self.conn.rollback()
-            print(f"[ERROR] DataBase execution error: {e}")
-            raise
+        self.conn.close()
 
     def commit(self):
-        if self.conn:
-            self.conn.commit()
+        self.conn.commit()
 
     def rollback(self):
-        if self.conn:
-            self.conn.rollback()
+        self.conn.rollback()
 
-    def insert(self, table:str, data:dict):
-        columns = ', '.join(data.keys())
-        placeholders = ', '.join([f'%({k})s' for k in data.keys()])
-        query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders}) RETURNING id"
+    def insert(self, table: str, data: dict) -> None | int:
+        with self.cursor() as cursor:
+            columns = ", ".join(data.keys())
+            placeholders = ", ".join([f"%({k})s" for k in data.keys()])
 
-        self.execute(query, data)
-        self.commit()
-        return self.cursor.fetchone()[0]
+            cursor.execute(
+                "INSERT INTO %s (%s) VALUES (%s) RETURNING id",
+                (table, columns, placeholders),
+            )
+            self.commit()
 
-    def update(self, table:str, data:dict, condition:str, condition_params:tuple) -> int:
+            result = cursor.fetchone()
+            if result is None:
+                return None
+            else:
+                return result[0]
 
-        set_clause = ', '.join([f"{k} = %s" for k in data.keys()])
-        query = f"UPDATE {table} SET {set_clause} WHERE {condition}"
-        
-        params = list(data.values())
-        if condition_params:
-            params.extend(condition_params)
+    def update(
+        self, table: str, data: dict, condition: str, condition_params: tuple
+    ) -> int:
+        with self.cursor() as cursor:
+            set_clause = ", ".join([f"{k} = %s" for k in data.keys()])
 
-        self.cursor.execute(query, params)
-        self.commit()
-        return self.cursor.rowcount
+            params = list(data.values())
+            if condition_params:
+                params.extend(condition_params)
+
+            cursor.execute("UPDATE %s SET %s WHERE %s", (table, set_clause, condition))
+            self.commit()
+
+            return cursor.rowcount
+
+    def execute_raw(self, sql: str, params: tuple = ()):
+        with self.cursor() as cursor:
+            cursor.execute(sql, params)
+            return cursor.fetchall()
