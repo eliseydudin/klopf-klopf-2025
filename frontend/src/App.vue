@@ -35,6 +35,7 @@ import MetroMap from './components/metro_map/MetroMap.vue';
 
 .icon_metro {
   width: 40px;
+  height: 40px;
 }
 
 .icon_metro_text {
@@ -51,6 +52,8 @@ import MetroMap from './components/metro_map/MetroMap.vue';
 <style>
 * {
   font-family: "Mulish", serif;
+  padding: 0;
+  margin: 0;
 }
 
 .container {
