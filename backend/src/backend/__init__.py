@@ -8,6 +8,7 @@ import uvicorn
 
 def main() -> None:
     try:
+        backend-web
         config = Config()
         database = Database(
             config.HOST,
@@ -20,9 +21,7 @@ def main() -> None:
         api = fastapi.FastAPI()
         api.state.db = database
         api.include_router(router)
-
         uvicorn.run(api)
-
     except Exception as err:
         logger.error(f"{err}")
     finally:
