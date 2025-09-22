@@ -1,5 +1,5 @@
 from backend.database import Database
-from backend.config import HOST, USER, PASSWORD, DATABASE_NAME, PORT
+from backend.config import Config
 from loguru import logger
 from backend.app import router
 import fastapi
@@ -8,7 +8,14 @@ import uvicorn
 
 def main() -> None:
     try:
-        database = Database(HOST, USER, PASSWORD, DATABASE_NAME, PORT)
+        config = Config()
+        database = Database(
+            config.HOST,
+            config.USER,
+            config.PASSWORD,
+            config.DATABASE_NAME,
+            int(config.PORT),
+        )
 
         api = fastapi.FastAPI()
         api.state.db = database
