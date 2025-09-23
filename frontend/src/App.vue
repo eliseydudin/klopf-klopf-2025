@@ -3,6 +3,10 @@ import MetroMap from './components/metro_map/MetroMap.vue';
 import PopUp from "@/components/PopUp.vue";
 import Search from "@/components/Search.vue";
 import Message from "@/components/Message.vue";
+import { ref } from 'vue';
+
+const error = ref<string | null>(null);
+
 </script>
 
 <template>
@@ -19,8 +23,8 @@ import Message from "@/components/Message.vue";
     <h1 class="title">Система мониторинга и выявления инцидентов на эскалаторах Московского
       Метрополитена</h1>
     <PopUp></PopUp>
-    <Search></Search>
-    <Message></Message>
+    <Search v-model="error"></Search>
+    <Message v-model="error"></Message>
   </div>
 
   <MetroMap></MetroMap>

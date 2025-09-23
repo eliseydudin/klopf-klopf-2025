@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref } from "vue";
 
 const isOpen = ref(true)
 
@@ -12,8 +12,8 @@ const toggle = () => {
 </script>
 
 <template>
-  <div class="dark" @click="toggle()" :class="{ 'go': !isOpen}"></div>
-  <div class="popup" :class="{ 'go-right': !isOpen}" >
+  <div class="dark" @click="toggle()" :class="{ 'go': !isOpen }"></div>
+  <div class="popup" :class="{ 'go-right': !isOpen }">
     <slot></slot>
   </div>
 </template>
@@ -28,7 +28,7 @@ const toggle = () => {
   background-color: #FAFFFF;
 }
 
-.dark{
+.dark {
   position: fixed;
   height: 100vh;
   width: 100vw;
@@ -38,7 +38,7 @@ const toggle = () => {
   opacity: 0.5;
 }
 
-.go{
+.go {
   animation: go 1s;
   animation-fill-mode: forwards;
 
@@ -48,13 +48,16 @@ const toggle = () => {
   0% {
     opacity: 0.5;
   }
-  99.99%{
+
+  99.99% {
     opacity: 0;
   }
-  100%{
+
+  100% {
     width: 0;
   }
 }
+
 .go-right {
   animation: animation 1s;
   animation-fill-mode: forwards;
@@ -64,7 +67,8 @@ const toggle = () => {
   from {
     right: 0;
   }
-  to{
+
+  to {
     transform: translateX(100%);
   }
 }
