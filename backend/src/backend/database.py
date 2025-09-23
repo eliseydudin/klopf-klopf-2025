@@ -104,14 +104,19 @@ class ProjectDB:
         return self.db.update("events", data, id)
 
     def get_events_by(
-        self, parameter: str, param_value: str, sort_by: str = "timestamp"
+        self,
+        parameter: str,
+        param_value: str,
+        limit: int | None,
+        sort_by: str = "timestamp",
     ) -> list[dict] | None:
+        logger.info(f"{param_value=}, {parameter=}")
+
+        limit_query = f"LIMIT {abs(limit)}" if limit is not None else ""
+
         result = self.db.execute_raw(
-            "SELECT * FROM events WHERE (%s) = (%s)",
-            (
-                parameter,
-                param_value,
-            ),
+            f"SELECT * FROM events WHERE ({parameter}) = (%s) {limit_query}",
+            (param_value,),
         )
 
         if result is None:
@@ -121,10 +126,10 @@ class ProjectDB:
             for item in result:
                 events_list.append(
                     {
-                        "id": id,
-                        "timestamp": item[0],
-                        "station": item[1],
-                        "type": item[2],
+                        "id": item[0],
+                        "timestamp": item[1],
+                        "station": item[2],
+                        "type": item[3],
                     }
                 )
             sorted_list = sorted(events_list, key=lambda x: x[sort_by])

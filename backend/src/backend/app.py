@@ -24,3 +24,16 @@ async def add_incident(request: fastapi.Request, upload: IncidentUpload):
         return {"error": "couldn't add the incident to the database"}
     else:
         return {"id": str(result)}
+
+
+@router.get("/incident/station/{station}")
+async def get_incidents(
+    request: fastapi.Request, station: str, limit: int | None = None
+):
+    database: ProjectDB = request.app.state.db
+    events = database.get_events_by("station", station, limit)
+
+    if events is None or len(events) == 0:
+        return {"error": "no incidents found"}
+
+    return {"events": events}
