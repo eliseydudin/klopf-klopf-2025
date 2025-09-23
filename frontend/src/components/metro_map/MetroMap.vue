@@ -12,7 +12,7 @@ onMounted(() => {
   }
 
   app = new App(elem.value);
-  app.use((station, next)=> {
+  app.use((station, next) => {
     console.log(station);
     next();
   })
@@ -75,12 +75,12 @@ onUnmounted(() => {
 .moscow_metro_map__check.selected {
   opacity: 1;
 }
-.map{
+
+.map {
   width: 1000px;
   height: 1000px;
   margin: 0 auto;
   border: black solid 1px;
   border-radius: 15px;
 }
-
 </style>

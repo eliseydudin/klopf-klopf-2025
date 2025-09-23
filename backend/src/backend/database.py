@@ -1,6 +1,6 @@
 import psycopg2
 from loguru import logger
-from config import BRANCHES
+from .config import BRANCHES
 
 
 class Database:
