@@ -25,7 +25,7 @@ const toggle = () => {
   position: fixed;
   top: 0;
   right: 0;
-  background-color: aliceblue;
+  background-color: #FAFFFF;
 }
 
 .dark{

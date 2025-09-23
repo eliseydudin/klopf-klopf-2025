@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import MetroMap from './components/metro_map/MetroMap.vue';
 import PopUp from "@/components/PopUp.vue";
+import Search from "@/components/Search.vue";
+import Message from "@/components/Message.vue";
 </script>
 
 <template>
@@ -17,6 +19,8 @@ import PopUp from "@/components/PopUp.vue";
     <h1 class="title">Система мониторинга и выявления инцидентов на эскалаторах Московского
       Метрополитена</h1>
     <PopUp></PopUp>
+    <Search></Search>
+    <Message></Message>
   </div>
 
   <MetroMap></MetroMap>
@@ -61,6 +65,6 @@ import PopUp from "@/components/PopUp.vue";
 .container {
   width: 1200px;
   margin: 0 auto;
-  padding: 40px 10px;
+  padding: 30px 10px;
 }
 </style>
