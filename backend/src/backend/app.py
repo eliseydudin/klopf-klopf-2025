@@ -60,6 +60,11 @@ async def get_statistics(request: fastapi.Request, station: str):
 
     events_amount = len(events)
     today_events_amount = 0
+    amount_by_types = [0, 0, 0]
+    for event in events:
+        event_type = event["type"]
+        amount_by_types[event_type] += 1
+
     for event in events:
         timestamp = event["timestamp"]
         today = datetime.datetime.now().date()
@@ -67,4 +72,8 @@ async def get_statistics(request: fastapi.Request, station: str):
         if timestamp.date() == today:
             today_events_amount += 1
 
-    return {"events amount": events_amount, "today_events_amount": today_events_amount}
+    return {
+        "events amount": events_amount,
+        "today_events_amount": today_events_amount,
+        "amount_by_types": amount_by_types,
+    }
