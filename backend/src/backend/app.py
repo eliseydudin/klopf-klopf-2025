@@ -27,7 +27,7 @@ async def add_incident(
     if result is None:
         return {"error": "couldn't add the incident to the database"}
     else:
-        with open(f"{result}.mp4", "wb") as new_file:
+        with open(f"videos/{result}.mp4", "wb") as new_file:
             new_file.write(file.file.read())
 
         return {"id": str(result)}
