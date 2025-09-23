@@ -131,12 +131,13 @@ class ProjectDB:
             return sorted_list
 
     def get_branch_by_station(self, station: str) -> list[str]:
-        lines = []
+        lines: list[str] = []
 
         for line, stations in BRANCHES.items():
             if station in stations:
                 lines.append(line)
-            return lines
+
+        return lines
 
     def get_stations_by_branch(self, branch: str) -> list[str]:
         return BRANCHES[branch]
