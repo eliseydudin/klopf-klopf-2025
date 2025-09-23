@@ -1,7 +1,7 @@
 import os
 import dotenv
 
-BRANCHES = branch_dict = {
+BRANCHES = {
     "Сокольническая линия": [
         "Бульвар Рокоссовского",
         "Черкизовская",
