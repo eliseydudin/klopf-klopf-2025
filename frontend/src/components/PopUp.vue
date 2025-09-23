@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { StationStats } from "@/types";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
 const data = defineModel<null | StationStats>({ required: true })
 const isOpen = computed({
@@ -20,7 +20,7 @@ const toggle = () => {
 <template>
   <div class="dark" @click="toggle()" :class="{ 'go': !isOpen }"></div>
   <div class="popup" :class="{ 'go-right': !isOpen }">
-    <div>Данные: {{ data }}</div>
+    <div>Событий сегодня: {{ data?.today_events_amount }}</div>
   </div>
 </template>
 
