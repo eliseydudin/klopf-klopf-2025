@@ -1,4 +1,5 @@
 import fastapi
+from fastapi.responses import StreamingResponse
 from backend.database import ProjectDB
 from backend.models import IncidentUpload
 from collections import defaultdict
@@ -92,3 +93,12 @@ async def get_statistics(request: fastapi.Request, station: str):
         "amount_by_types": amount_by_types,
         "latest_events": events,
     }
+
+
+@router.get("/incident/station/stream/{event_id}")
+def stream_main(request: fastapi.Request, event_id: int):
+    def iterfile():  # (1)
+        with open(f"{event_id}.mp4", mode="rb") as file_like:  # (2)
+            yield from file_like  # (3)
+
+    return StreamingResponse(iterfile(), media_type="video/mp4")
