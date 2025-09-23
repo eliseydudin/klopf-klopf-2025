@@ -320,9 +320,7 @@ def train_model(model_path=MODEL_PATH):
 
 
 # ===================== ПРОГНОЗИРОВАНИЕ НА НОВОМ ВИДЕО =====================
-def predict_incident(
-    video_path, model_path=MODEL_PATH
-) -> tuple[None | str, None | str]:
+def predict_incident(video_path: str, model_path=MODEL_PATH) -> None | str:
     model = keras.models.load_model(model_path)
 
     frames_dir = extract_frames_from_video(
@@ -330,7 +328,7 @@ def predict_incident(
     )
     if frames_dir is None:
         print(f"❌ Не удалось обработать видео: {video_path}")
-        return None, None
+        return None
 
     generator = VideoSequenceGenerator(
         [frames_dir],
@@ -352,7 +350,7 @@ def predict_incident(
             if os.path.isdir(os.path.join(DATASET_DIR, d))
         ]
     )
-    class_name = class_names[class_idx]
+    class_name = class_names[class_idx - 1]
 
     print(f"\n{'=' * 50}")
     # print(f"Результат для: {os.path.basename(video_path)}")
@@ -362,7 +360,7 @@ def predict_incident(
         f"Другие классы: {[f'{c}: {p:.2%}' for c, p in zip(class_names, prediction)]}"
     )
     print(f"{'=' * 50}\n")
-    return class_name, prediction
+    return class_name
 
 
 # ===================== ЗАПУСК С КОМАНДНОЙ СТРОКОЙ =====================

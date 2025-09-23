@@ -63,6 +63,7 @@ class ProjectDB:
             host=host, user=user, password=password, database=database, port=port
         )
         self.table_setup()
+        self.db.commit()
 
     def table_setup(self):
         """Создание таблицы для хранения инцидентов"""

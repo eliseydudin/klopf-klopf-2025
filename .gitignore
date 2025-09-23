@@ -1,9 +1,14 @@
-# os filed
+# os files
 .DS_Store
 # python
 .venv/
 __pycache__/
+*.h5
+backend/videos/
 # frontend
 node_modules/
 # dev
 .env
+# images
+*.mp4
+backend/dataset/*

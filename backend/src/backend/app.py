@@ -1,12 +1,11 @@
 import fastapi
-import uuid
 import os
 from fastapi.responses import StreamingResponse
 from backend.database import ProjectDB
-from backend.models import IncidentUpload
 from collections import defaultdict
 import datetime
-from .ai.model import predict_incident
+from backend.ai.model import predict_incident
+from pathlib import Path
 
 router = fastapi.APIRouter()
 
@@ -21,27 +20,30 @@ async def database_version(request: fastapi.Request) -> dict[str, str]:
     }
 
 
-@router.post("/incident/add")
+@router.post("/incident/add/{station}")
 async def add_incident(
-    request: fastapi.Request, upload: IncidentUpload, file: fastapi.UploadFile
+    request: fastapi.Request, file: fastapi.UploadFile, station: str
 ):
     data: ProjectDB = request.app.state.db
-    temp_id = uuid.uuid1()
+    temp_id = "test"
 
-    with open(f"videos/{temp_id}.mp4", "wb") as new_file:
+    path_old = Path(f"videos/{temp_id}.mp4")
+    path_old.touch()
+
+    with open(path_old, "wb") as new_file:
         new_file.write(file.file.read())
 
-    event_type_str = predict_incident(f"videos/{temp_id}.mp4")[0]
+    event_type_str = predict_incident(f"videos/{temp_id}.mp4")
     if event_type_str is None:
         return {"error": "couldn't add the incident to the database"}
     event_type = {"fights": 1, "falls": 0}[event_type_str]
 
-    result = data.add_event(upload.station, event_type)
+    result = data.add_event(station, event_type)
 
     if result is None:
         return {"error": "couldn't add the incident to the database"}
     else:
-        os.rename(f"videos/{temp_id}.mp4", f"videos/{result}.mp4")
+        os.rename(path_old, f"videos/{result}.mp4")
         return {"id": str(result)}
 
 
