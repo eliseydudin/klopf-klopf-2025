@@ -2,6 +2,7 @@ import fastapi
 from backend.database import ProjectDB
 from backend.models import IncidentUpload
 import datetime
+from collections import defaultdict
 
 router = fastapi.APIRouter()
 
@@ -60,7 +61,10 @@ async def get_statistics(request: fastapi.Request, station: str):
 
     events_amount = len(events)
     today_events_amount = 0
-    amount_by_types = [0, 0, 0]
+
+    amount_by_types: defaultdict[int, int] = defaultdict()
+    amount_by_types.default_factory = lambda: 0
+
     for event in events:
         event_type = event["type"]
         amount_by_types[event_type] += 1
