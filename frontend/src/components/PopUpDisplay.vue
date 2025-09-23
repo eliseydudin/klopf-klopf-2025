@@ -3,10 +3,10 @@ import {ShieldAlert} from "lucide-vue-next";
 
 const events = [
   {
-    id: 1, timestamp: 123123123, type: 0
+    id: 1, timestamp: 123123123, type: 0, time: "13:12"
   },
   {
-    id: 2, timestamp: 123123124, type: 1
+    id: 2, timestamp: 123123124, type: 1, time: "17:31"
   }
 ];
 
@@ -36,6 +36,7 @@ const getText = (type: number) => {
       <div class="incidents" v-for="item in events">
         <ShieldAlert :color="getColorFromType(item.type)"></ShieldAlert>
         <p>{{ getText(item.type) }}</p>
+        <p style="color:grey">{{ item.time }}</p>
       </div>
     </div>
 
@@ -57,7 +58,7 @@ const getText = (type: number) => {
 
 .incidents {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
 }
 
