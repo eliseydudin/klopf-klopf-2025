@@ -4,8 +4,10 @@ import PopUp from "@/components/PopUp.vue";
 import Search from "@/components/Search.vue";
 import Message from "@/components/Message.vue";
 import { ref } from 'vue';
+import type { StationStats } from './types';
 
 const error = ref<string | null>(null);
+const fetchResult = ref<null | StationStats>(null)
 
 </script>
 
@@ -22,8 +24,8 @@ const error = ref<string | null>(null);
     </header>
     <h1 class="title">Система мониторинга и выявления инцидентов на эскалаторах Московского
       Метрополитена</h1>
-    <PopUp></PopUp>
-    <Search v-model="error"></Search>
+    <PopUp v-model="fetchResult"></PopUp>
+    <Search v-model="error" v-model:result="fetchResult"></Search>
     <Message v-model="error"></Message>
   </div>
 

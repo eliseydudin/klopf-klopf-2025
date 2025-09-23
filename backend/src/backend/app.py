@@ -77,7 +77,7 @@ async def get_statistics(request: fastapi.Request, station: str):
             today_events_amount += 1
 
     return {
-        "events amount": events_amount,
+        "events_amount": events_amount,
         "today_events_amount": today_events_amount,
         "amount_by_types": amount_by_types,
     }

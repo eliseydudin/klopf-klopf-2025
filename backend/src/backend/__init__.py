@@ -3,6 +3,7 @@ from backend.config import Config
 from loguru import logger
 from backend.app import router
 import fastapi
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 
@@ -16,8 +17,15 @@ def main() -> None:
             config.DATABASE_NAME,
             int(config.PORT),
         )
-
         api = fastapi.FastAPI()
+        api.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
         api.state.db = database
         api.include_router(router)
         uvicorn.run(api)

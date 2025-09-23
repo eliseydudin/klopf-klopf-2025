@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import type { StationStats } from "@/types";
+import { computed, ref } from "vue";
 
-const isOpen = ref(true)
+const data = defineModel<null | StationStats>({ required: true })
+const isOpen = computed({
+  get: () => data.value !== null, set: (value) => {
+    if (!value) data.value = null;
+  }
+});
 
 const toggle = () => {
   if (isOpen.value) {
@@ -14,7 +20,7 @@ const toggle = () => {
 <template>
   <div class="dark" @click="toggle()" :class="{ 'go': !isOpen }"></div>
   <div class="popup" :class="{ 'go-right': !isOpen }">
-    <slot></slot>
+    <div>Данные: {{ data }}</div>
   </div>
 </template>
 

@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useFetch } from '@vueuse/core';
+import type { StationStats } from '@/types';
 
 const message = ref("")
 const error = defineModel<string | null>({ required: true })
+const fetchResult = defineModel<null | StationStats>("result", { required: true })
 
 const onClick = async () => {
-  const fetchResult = await useFetch("https://httpbin.org/get");
+  const { data, error: fetchError } = await useFetch(`http://0.0.0.0:8000/incident/station/statistics/${message.value}`).json();
+  console.log(`data: ${data.value}, error: ${error.value}`)
 
-  if (fetchResult.error) {
-    error.value = fetchResult.error.value;
+  if (fetchError.value) {
+    error.value = "Произошла ошибка! Проверьте написание названия станции";
   } else {
     error.value = null;
+    fetchResult.value = data.value as StationStats
   }
 }
 
