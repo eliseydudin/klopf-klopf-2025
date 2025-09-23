@@ -41,11 +41,15 @@ class Database:
             self.commit()
             return cursor.rowcount
 
-    def execute_raw(self, sql: str, params: tuple = ()):
+    def execute_raw(self, sql: str, params: tuple = (), ignore_result: bool = False):
         try:
             with self.cursor() as cursor:
                 cursor.execute(sql, params)
-                return cursor.fetchall()
+
+                if not ignore_result:
+                    return cursor.fetchall()
+
+                return None
         except psycopg2.ProgrammingError as err:
             logger.error(f"a psql error occurred: {err}")
             return None
@@ -63,7 +67,8 @@ class ProjectDB:
     def table_setup(self):
         """Создание таблицы для хранения инцидентов"""
         self.db.execute_raw(
-            sql="CREATE TABLE IF NOT EXISTS events (id bigint GENERATED ALWAYS AS IDENTITY, timestamp TIME, station VARCHAR NOT NULL, type int NOT NULL)"
+            sql="CREATE TABLE IF NOT EXISTS events (id bigint GENERATED ALWAYS AS IDENTITY, timestamp timestamp, station VARCHAR NOT NULL, type int NOT NULL)",
+            ignore_result=True,
         )
 
     def add_event(self, station: str, type: int = 0) -> None | int:
@@ -73,7 +78,7 @@ class ProjectDB:
 
         #    "events", {"timestamp": "LOCALTIME", "station": station, "type": type}
         res = self.db.execute_raw(
-            "INSERT INTO events (timestamp, station, type) VALUES(LOCALTIME(6), %s, %s) RETURNING id",
+            "INSERT INTO events (timestamp, station, type) VALUES(CURRENT_TIMESTAMP, %s, %s) RETURNING id",
             (station, type),
         )
         self.db.commit()
@@ -104,39 +109,46 @@ class ProjectDB:
         return self.db.update("events", data, id)
 
     def get_events_by(
-        self, parameter: str, param_value: str, sort_by: str = "timestamp"
+        self,
+        parameter: str,
+        param_value: str,
+        limit: int | None = None,
+        sort_by: str = "timestamp",
     ) -> list[dict] | None:
+        logger.info(f"{param_value=}, {parameter=}")
+
+        limit_query = f"LIMIT {abs(limit)}" if limit is not None else ""
+
         result = self.db.execute_raw(
-            "SELECT * FROM events WHERE (%s) = (%s)",
-            (
-                parameter,
-                param_value,
-            ),
+            f"SELECT * FROM events WHERE ({parameter}) = (%s) ORDER BY timestamp ASC {limit_query}",
+            (param_value,),
         )
 
         if result is None:
             return None
         else:
-            events_list = []
-            for item in result:
-                events_list.append(
-                    {
-                        "id": id,
-                        "timestamp": item[0],
-                        "station": item[1],
-                        "type": item[2],
-                    }
+            events_list = list(
+                map(
+                    lambda item: {
+                        "id": item[0],
+                        "timestamp": item[1],
+                        "station": item[2],
+                        "type": item[3],
+                    },
+                    result,
                 )
-            sorted_list = sorted(events_list, key=lambda x: x[sort_by])
-            return sorted_list
+            )
 
-    def get_branch_by_station(self, station: str) -> str:
-        lines = []
+            return events_list
+
+    def get_branch_by_station(self, station: str) -> list[str]:
+        lines: list[str] = []
 
         for line, stations in BRANCHES.items():
             if station in stations:
                 lines.append(line)
-            return lines
+
+        return lines
 
     def get_stations_by_branch(self, branch: str) -> list[str]:
         return BRANCHES[branch]
