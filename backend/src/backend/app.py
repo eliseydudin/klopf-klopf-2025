@@ -1,6 +1,7 @@
 import fastapi
 from backend.database import ProjectDB
 from backend.models import IncidentUpload
+import datetime
 
 router = fastapi.APIRouter()
 
@@ -48,3 +49,22 @@ async def get_branch(request: fastapi.Request, station: str):
         return {"error": "no branches found"}
 
     return {"branches": branches}
+
+
+@router.get("/incident/station/statistics/{station}")
+async def get_statistics(request: fastapi.Request, station: str):
+    database: ProjectDB = request.app.state.db
+    events = database.get_events_by("stations", station)
+    if events is None or len(events) == 0:
+        return {"error": "no incidents found"}
+
+    events_amount = len(events)
+    today_events_amount = 0
+    for event in events:
+        timestamp = event["timestamp"]
+        today = datetime.datetime.now().date()
+
+        if timestamp.date() == today:
+            today_events_amount += 1
+
+    return {"events amount": events_amount, "today_events_amount": today_events_amount}
