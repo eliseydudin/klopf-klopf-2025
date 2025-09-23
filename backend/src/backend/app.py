@@ -1,9 +1,12 @@
 import fastapi
+import uuid
+import os
 from fastapi.responses import StreamingResponse
 from backend.database import ProjectDB
 from backend.models import IncidentUpload
 from collections import defaultdict
 import datetime
+from .ai.model import predict_incident
 
 router = fastapi.APIRouter()
 
@@ -23,14 +26,20 @@ async def add_incident(
     request: fastapi.Request, upload: IncidentUpload, file: fastapi.UploadFile
 ):
     data: ProjectDB = request.app.state.db
-    result = data.add_event(upload.station, upload.incident_type)
+    temp_id = uuid.uuid1()
+
+    with open(f"videos/{temp_id}.mp4", "wb") as new_file:
+        new_file.write(file.file.read())
+
+    event_type_str = predict_incident(f"videos/{temp_id}.mp4")
+    event_type = {"fights": 0, "falls": 1}[event_type_str]
+
+    result = data.add_event(upload.station, event_type)
 
     if result is None:
         return {"error": "couldn't add the incident to the database"}
     else:
-        with open(f"videos/{result}.mp4", "wb") as new_file:
-            new_file.write(file.file.read())
-
+        os.rename(f"videos/{temp_id}.mp4", f"videos/{result}.mp4")
         return {"id": str(result)}
 
 
