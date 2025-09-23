@@ -130,7 +130,7 @@ class ProjectDB:
             sorted_list = sorted(events_list, key=lambda x: x[sort_by])
             return sorted_list
 
-    def get_branch_by_station(self, station: str) -> str:
+    def get_branch_by_station(self, station: str) -> list[str]:
         lines = []
 
         for line, stations in BRANCHES.items():
