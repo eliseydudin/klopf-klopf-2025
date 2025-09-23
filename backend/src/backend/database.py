@@ -67,7 +67,7 @@ class ProjectDB:
     def table_setup(self):
         """Создание таблицы для хранения инцидентов"""
         self.db.execute_raw(
-            sql="CREATE TABLE IF NOT EXISTS events (id bigint GENERATED ALWAYS AS IDENTITY, timestamp TIME, station VARCHAR NOT NULL, type int NOT NULL)",
+            sql="CREATE TABLE IF NOT EXISTS events (id bigint GENERATED ALWAYS AS IDENTITY, timestamp timestamp, station VARCHAR NOT NULL, type int NOT NULL)",
             ignore_result=True,
         )
 
@@ -78,7 +78,7 @@ class ProjectDB:
 
         #    "events", {"timestamp": "LOCALTIME", "station": station, "type": type}
         res = self.db.execute_raw(
-            "INSERT INTO events (timestamp, station, type) VALUES(LOCALTIME(6), %s, %s) RETURNING id",
+            "INSERT INTO events (timestamp, station, type) VALUES(CURRENT_TIMESTAMP, %s, %s) RETURNING id",
             (station, type),
         )
         self.db.commit()
