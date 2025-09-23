@@ -82,6 +82,8 @@ async def get_statistics(request: fastapi.Request, station: str):
         if timestamp.date() == today:
             today_events_amount += 1
 
+        event["timestamp"] = event["timestamp"].timestamp()
+
     branch = database.get_branch_by_station(station)
     branch = branch[0] if len(branch) > 0 else ""
 

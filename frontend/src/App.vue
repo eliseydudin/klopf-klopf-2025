@@ -7,7 +7,7 @@ import { ref } from 'vue';
 import type { StationStats } from './types';
 
 const error = ref<string | null>(null);
-const fetchResult = ref<null | StationStats>(null)
+const fetchResult = ref<null | string>(null)
 
 </script>
 
@@ -25,7 +25,7 @@ const fetchResult = ref<null | StationStats>(null)
     <h1 class="title">Система мониторинга и выявления инцидентов на эскалаторах Московского
       Метрополитена</h1>
     <PopUp v-model="fetchResult"></PopUp>
-    <Search v-model="error" v-model:result="fetchResult"></Search>
+    <Search v-model:error="error" v-model:result="fetchResult"></Search>
     <Message v-model="error"></Message>
   </div>
 

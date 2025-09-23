@@ -1,45 +1,49 @@
 <script setup lang="ts">
-import {ShieldAlert} from "lucide-vue-next";
+import type { StationStats } from "@/types";
+import { ShieldAlert } from "lucide-vue-next";
 
-const events = [
-  {
-    id: 1, timestamp: 123123123, type: 0, time: "13:12"
-  },
-  {
-    id: 2, timestamp: 123123124, type: 1, time: "17:31"
-  }
-];
+const { data } = defineProps<{ data: StationStats }>();
+console.log(data);
 
 const getColorFromType = (type: number) => {
   if (type === 0) {
     return "orange";
-  } else if (type === 1) {
+  } else {
     return "red"
   }
 }
+
+const dateFromTime = (time: number) => {
+  const date = new Date(time);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${hours}:${minutes}`
+}
+
 const getText = (type: number) => {
   if (type === 0) {
     return "Падение с эскалатора"
   } else if (type === 1) {
     return "Драка на эскалаторе"
+  } else {
+    return "unknown"
   }
 }
 </script>
 
 <template>
   <div class="container_station">
-    <h2 class="station_title">Станция: Первомайская</h2>
-    <h3>Ветка: Арбатско-покровская</h3>
-    <p>Инцидентов за сегодняшний день: 2</p>
+    <h2 class="station_title">Станция: {{ data.station }}</h2>
+    <h3>Ветка: {{ data.branch }} </h3>
+    <p>Инцидентов за сегодняшний день: {{ data.today_events_amount }}</p>
     <p>Последние происшествия:</p>
     <div class="list_incidents">
-      <div class="incidents" v-for="item in events">
+      <div class="incidents" v-for='item in data.latest_events'>
         <ShieldAlert :color="getColorFromType(item.type)"></ShieldAlert>
         <p>{{ getText(item.type) }}</p>
-        <p style="color:grey">{{ item.time }}</p>
+        <p style="color:grey">{{ dateFromTime(item.timestamp) }}</p>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -62,7 +66,7 @@ const getText = (type: number) => {
   align-items: center;
 }
 
-.list_incidents{
+.list_incidents {
   display: flex;
   gap: 10px;
   flex-direction: column;

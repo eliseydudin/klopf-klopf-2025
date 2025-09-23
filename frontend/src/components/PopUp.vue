@@ -3,16 +3,19 @@ import type { StationStats } from "@/types";
 import { computed } from "vue";
 import PopUpDisplay from "@/components/PopUpDisplay.vue";
 
-const data = defineModel<null | StationStats>({ required: true })
-const isOpen = computed({
-  get: () => /*data.value !== null*/true, set: (value) => {
-    if (!value) data.value = null;
+const __data = defineModel<null | string>({ required: true })
+const data = computed(() => {
+  if (__data == null) {
+    return null;
+  } else {
+    return JSON.parse(__data.value!) as StationStats;
   }
-});
+})
+const isOpen = computed(() => data.value !== null);
 
 const toggle = () => {
   if (isOpen.value) {
-    isOpen.value = false;
+    __data.value = null;
   }
 }
 
@@ -20,8 +23,8 @@ const toggle = () => {
 
 <template>
   <div class="dark" @click="toggle()" :class="{ 'go': !isOpen }"></div>
-  <div class="popup" :class="{ 'go-right': !isOpen }">
-    <PopUpDisplay></PopUpDisplay>
+  <div class="popup" :class="{ 'go-right': !isOpen }" v-if="data !== null">
+    <PopUpDisplay :data="data" />
   </div>
 </template>
 
