@@ -112,7 +112,7 @@ class ProjectDB:
         self,
         parameter: str,
         param_value: str,
-        limit: int | None,
+        limit: int | None = None,
         sort_by: str = "timestamp",
     ) -> list[dict] | None:
         logger.info(f"{param_value=}, {parameter=}")
