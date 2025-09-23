@@ -120,25 +120,26 @@ class ProjectDB:
         limit_query = f"LIMIT {abs(limit)}" if limit is not None else ""
 
         result = self.db.execute_raw(
-            f"SELECT * FROM events WHERE ({parameter}) = (%s) {limit_query}",
+            f"SELECT * FROM events WHERE ({parameter}) = (%s) ORDER BY timestamp ASC {limit_query}",
             (param_value,),
         )
 
         if result is None:
             return None
         else:
-            events_list = []
-            for item in result:
-                events_list.append(
-                    {
+            events_list = list(
+                map(
+                    lambda item: {
                         "id": item[0],
                         "timestamp": item[1],
                         "station": item[2],
                         "type": item[3],
-                    }
+                    },
+                    result,
                 )
-            sorted_list = sorted(events_list, key=lambda x: x[sort_by])
-            return sorted_list
+            )
+
+            return events_list
 
     def get_branch_by_station(self, station: str) -> list[str]:
         lines: list[str] = []
