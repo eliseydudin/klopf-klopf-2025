@@ -41,11 +41,15 @@ class Database:
             self.commit()
             return cursor.rowcount
 
-    def execute_raw(self, sql: str, params: tuple = ()):
+    def execute_raw(self, sql: str, params: tuple = (), ignore_result: bool = False):
         try:
             with self.cursor() as cursor:
                 cursor.execute(sql, params)
-                return cursor.fetchall()
+
+                if not ignore_result:
+                    return cursor.fetchall()
+
+                return None
         except psycopg2.ProgrammingError as err:
             logger.error(f"a psql error occurred: {err}")
             return None
@@ -63,7 +67,8 @@ class ProjectDB:
     def table_setup(self):
         """Создание таблицы для хранения инцидентов"""
         self.db.execute_raw(
-            sql="CREATE TABLE IF NOT EXISTS events (id bigint GENERATED ALWAYS AS IDENTITY, timestamp TIME, station VARCHAR NOT NULL, type int NOT NULL)"
+            sql="CREATE TABLE IF NOT EXISTS events (id bigint GENERATED ALWAYS AS IDENTITY, timestamp TIME, station VARCHAR NOT NULL, type int NOT NULL)",
+            ignore_result=True,
         )
 
     def add_event(self, station: str, type: int = 0) -> None | int:
