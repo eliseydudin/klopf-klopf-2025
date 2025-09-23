@@ -37,3 +37,14 @@ async def get_incidents(
         return {"error": "no incidents found"}
 
     return {"events": events}
+
+
+@router.get("/incident/station/branch/{station}")
+async def get_branch(request: fastapi.Request, station: str):
+    database: ProjectDB = request.app.state.db
+    branches = database.get_branch_by_station(station=station)
+
+    if branches is None or len(branches) == 0:
+        return {"error": "no branches found"}
+
+    return {"branches": branches}
