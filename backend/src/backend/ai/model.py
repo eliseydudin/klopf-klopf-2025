@@ -2,19 +2,20 @@ import os
 import cv2
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import (
+from keras.models import Sequential, Model
+from keras.layers import (
     TimeDistributed,
     LSTM,
     Dense,
     Dropout,
     GlobalAveragePooling2D,
 )
-from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.applications.resnet50 import preprocess_input
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.utils import Sequence
-from sklearn.model_selection import train_test_split
+import keras
+from keras.applications import ResNet50
+from keras.applications.resnet50 import preprocess_input
+from keras.optimizers import Adam
+from keras.utils import Sequence
+from sklearn.model_selection import train_test_split  # type: ignore
 import argparse
 
 # ===================== КОНФИГУРАЦИЯ ДЛЯ APPLE M4  =====================
@@ -36,8 +37,8 @@ def setup_environment():
                 gpus[0], [tf.config.LogicalDeviceConfiguration(memory_limit=20336)]
             )
             # Включаем mixed precision для ускорения вычислений
-            policy = tf.keras.mixed_precision.Policy("mixed_float16")
-            tf.keras.mixed_precision.set_global_policy(policy)
+            policy = keras.mixed_precision.Policy("mixed_float16")
+            keras.mixed_precision.set_global_policy(policy)
             print(
                 "✅ Используем GPU с Metal Performance Shaders (MPS) и mixed precision"
             )
@@ -228,7 +229,7 @@ def build_model():
     model.add(Dense(NUM_CLASSES, activation="softmax"))
 
     model.compile(
-        optimizer=Adam(learning_rate=1e-4),
+        optimizer=Adam(learning_rate=1e-4),  # type: ignore
         loss="sparse_categorical_crossentropy",
         metrics=["accuracy"],
     )
@@ -296,22 +297,22 @@ def train_model(model_path=MODEL_PATH):
 
     model = build_model()
 
-    early_stop = tf.keras.callbacks.EarlyStopping(
+    early_stop = keras.callbacks.EarlyStopping(
         monitor="val_accuracy", patience=3, restore_best_weights=True, verbose=1
     )
 
-    model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
+    model_checkpoint = keras.callbacks.ModelCheckpoint(
         model_path, monitor="val_accuracy", save_best_only=True, verbose=1
     )
 
-    history = model.fit(
+    history = model.fit(  # noqa: F841
         train_generator,
         validation_data=val_generator,
         epochs=EPOCHS,
         steps_per_epoch=len(train_generator),
         validation_steps=len(val_generator),
         callbacks=[early_stop, model_checkpoint],
-        verbose=1,
+        verbose=1,  # type: ignore
     )
 
     print(f"✅ Модель сохранена в {model_path}")
@@ -319,8 +320,10 @@ def train_model(model_path=MODEL_PATH):
 
 
 # ===================== ПРОГНОЗИРОВАНИЕ НА НОВОМ ВИДЕО =====================
-def predict_incident(video_path, model_path=MODEL_PATH):
-    model = tf.keras.models.load_model(model_path)
+def predict_incident(
+    video_path, model_path=MODEL_PATH
+) -> tuple[None | str, None | str]:
+    model = keras.models.load_model(model_path)
 
     frames_dir = extract_frames_from_video(
         video_path, DATASET_DIR, "temp", frame_rate=3
@@ -339,7 +342,7 @@ def predict_incident(video_path, model_path=MODEL_PATH):
     )
 
     X, _ = generator[0]
-    prediction = model.predict(X)[0]
+    prediction = model.predict(X)[0]  # type: ignore
     class_idx = np.argmax(prediction)
 
     class_names = sorted(

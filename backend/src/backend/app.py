@@ -31,8 +31,10 @@ async def add_incident(
     with open(f"videos/{temp_id}.mp4", "wb") as new_file:
         new_file.write(file.file.read())
 
-    event_type_str = predict_incident(f"videos/{temp_id}.mp4")
-    event_type = {"fights": 0, "falls": 1}[event_type_str]
+    event_type_str = predict_incident(f"videos/{temp_id}.mp4")[0]
+    if event_type_str is None:
+        return {"error": "couldn't add the incident to the database"}
+    event_type = {"fights": 1, "falls": 0}[event_type_str]
 
     result = data.add_event(upload.station, event_type)
 
