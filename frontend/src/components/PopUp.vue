@@ -4,13 +4,15 @@ import {ref} from "vue";
 const isOpen = ref(true)
 
 const toggle = () => {
-  isOpen.value = !isOpen.value;
+  if (isOpen.value) {
+    isOpen.value = false;
+  }
 }
 
 </script>
 
 <template>
-  <div class="dark" @click="toggle()" v-if="isOpen"></div>
+  <div class="dark" @click="toggle()" :class="{ 'go': !isOpen}"></div>
   <div class="popup" :class="{ 'go-right': !isOpen}" >
     <slot></slot>
   </div>
@@ -19,7 +21,7 @@ const toggle = () => {
 <style scoped>
 .popup {
   height: 100vh;
-  width: 50vw;
+  width: 35vw;
   position: fixed;
   top: 0;
   right: 0;
@@ -29,11 +31,29 @@ const toggle = () => {
 .dark{
   position: fixed;
   height: 100vh;
-  width: 50vw;
+  width: 100vw;
   top: 0;
   left: 0;
   background-color: black;
   opacity: 0.5;
+}
+
+.go{
+  animation: go 1s;
+  animation-fill-mode: forwards;
+
+}
+
+@keyframes go {
+  0% {
+    opacity: 0.5;
+  }
+  99.99%{
+    opacity: 0;
+  }
+  100%{
+    width: 0;
+  }
 }
 .go-right {
   animation: animation 1s;
