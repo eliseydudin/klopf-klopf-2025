@@ -32,10 +32,10 @@ const getText = (type: number) => {
 </script>
 
 <template>
-  <div class="container_station">
+  <div class="container_station" v-if="(data as any).error === undefined">
     <h2 class="station_title">Станция: {{ data.station }}</h2>
     <h3>Ветка: {{ data.branch }} </h3>
-    <p>Инцидентов за сегодняшний день: {{ data.today_events_amount }}</p>
+    <p>Инцидентов за текущую неделю: {{ data.today_events_amount }}</p>
     <p>Последние происшествия:</p>
     <div class="list_incidents">
       <div class="incidents" v-for='item in data.latest_events'>
@@ -45,6 +45,7 @@ const getText = (type: number) => {
       </div>
     </div>
   </div>
+  <div class="container_station" v-else>Инцидентов не найдено!</div>
 </template>
 
 <style scoped>
