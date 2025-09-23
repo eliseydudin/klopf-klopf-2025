@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { StationStats } from "@/types";
 import { computed } from "vue";
+import PopUpDisplay from "@/components/PopUpDisplay.vue";
 
 const data = defineModel<null | StationStats>({ required: true })
 const isOpen = computed({
-  get: () => data.value !== null, set: (value) => {
+  get: () => /*data.value !== null*/true, set: (value) => {
     if (!value) data.value = null;
   }
 });
@@ -20,7 +21,7 @@ const toggle = () => {
 <template>
   <div class="dark" @click="toggle()" :class="{ 'go': !isOpen }"></div>
   <div class="popup" :class="{ 'go-right': !isOpen }">
-    <div>Событий сегодня: {{ data?.today_events_amount }}</div>
+    <PopUpDisplay></PopUpDisplay>
   </div>
 </template>
 

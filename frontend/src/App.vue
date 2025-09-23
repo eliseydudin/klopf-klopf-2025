@@ -30,6 +30,7 @@ const fetchResult = ref<null | StationStats>(null)
   </div>
 
   <MetroMap></MetroMap>
+
 </template>
 
 <style scoped>
