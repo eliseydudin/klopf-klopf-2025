@@ -54,7 +54,7 @@ async def get_branch(request: fastapi.Request, station: str):
 @router.get("/incident/station/statistics/{station}")
 async def get_statistics(request: fastapi.Request, station: str):
     database: ProjectDB = request.app.state.db
-    events = database.get_events_by("stations", station)
+    events = database.get_events_by("station", station)
     if events is None or len(events) == 0:
         return {"error": "no incidents found"}
 
