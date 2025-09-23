@@ -2,7 +2,6 @@ import fastapi
 from backend.database import ProjectDB
 from backend.models import IncidentUpload
 import datetime
-from collections import defaultdict
 
 router = fastapi.APIRouter()
 
@@ -18,13 +17,18 @@ async def database_version(request: fastapi.Request) -> dict[str, str]:
 
 
 @router.post("/incident/add")
-async def add_incident(request: fastapi.Request, upload: IncidentUpload):
+async def add_incident(
+    request: fastapi.Request, upload: IncidentUpload, file: fastapi.UploadFile
+):
     data: ProjectDB = request.app.state.db
     result = data.add_event(upload.station, upload.incident_type)
 
     if result is None:
         return {"error": "couldn't add the incident to the database"}
     else:
+        with open(f"{result}.mp4", "wb") as new_file:
+            new_file.write(file.file.read())
+
         return {"id": str(result)}
 
 
@@ -55,16 +59,13 @@ async def get_branch(request: fastapi.Request, station: str):
 @router.get("/incident/station/statistics/{station}")
 async def get_statistics(request: fastapi.Request, station: str):
     database: ProjectDB = request.app.state.db
-    events = database.get_events_by("station", station)
+    events = database.get_events_by("stations", station)
     if events is None or len(events) == 0:
         return {"error": "no incidents found"}
 
     events_amount = len(events)
     today_events_amount = 0
-
-    amount_by_types: defaultdict[int, int] = defaultdict()
-    amount_by_types.default_factory = lambda: 0
-
+    amount_by_types = [0, 0, 0]
     for event in events:
         event_type = event["type"]
         amount_by_types[event_type] += 1
