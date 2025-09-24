@@ -1,1 +1,2 @@
-frontend/src/components/metro_map/** linguist-vendored=false
+frontend/src/components/metro_map/app.ts linguist-vendored=false
+frontend/src/components/metro_map/map.ts linguist-vendored=false
